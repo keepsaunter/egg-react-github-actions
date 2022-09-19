@@ -1,0 +1,36 @@
+on: push
+jobs:
+  install-prod:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/cache@v3
+        name: cache-prod-modules
+        with:
+          path: node_modules
+          key: ${{ runner-os }}-${{ github.ref_name }}-prod
+      - if: ${{ steps.cache-prod-modules.outputs.cache-hit != 'true' }}
+        run: npm install --production
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/cache@v3
+        name: cache-modules
+        with:
+          path: node_modules
+          key: ${{ runner-os }}-${{ github.ref_name }}
+      - if: ${{ steps.cache-prod-modules.outputs.cache-hit != 'true' }}
+        run: npm install
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/cache@v3
+        name: cache-modules
+        with:
+          path: node_modules
+          key: ${{ runner-os }}-${{ github.ref_name }}
+      - run: npm run build
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build-dist
+          path: dist
+          if-no-files-found: error
