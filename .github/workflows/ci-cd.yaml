@@ -7,7 +7,7 @@ jobs:
         name: cache-prod-modules
         with:
           path: node_modules
-          key: ${{ runner-os }}-${{ github.ref_name }}-prod
+          key: ${{ runner.os }}-${{ github.ref_name }}-prod
       - if: ${{ steps.cache-prod-modules.outputs.cache-hit != 'true' }}
         run: npm install --production
   install:
@@ -17,7 +17,7 @@ jobs:
         name: cache-modules
         with:
           path: node_modules
-          key: ${{ runner-os }}-${{ github.ref_name }}
+          key: ${{ runner.os }}-${{ github.ref_name }}
       - if: ${{ steps.cache-prod-modules.outputs.cache-hit != 'true' }}
         run: npm install
   build:
@@ -27,7 +27,7 @@ jobs:
         name: cache-modules
         with:
           path: node_modules
-          key: ${{ runner-os }}-${{ github.ref_name }}
+          key: ${{ runner.os }}-${{ github.ref_name }}
       - run: npm run build
       - uses: actions/upload-artifact@v3
         with:
