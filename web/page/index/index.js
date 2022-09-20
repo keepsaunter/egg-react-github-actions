@@ -10,7 +10,7 @@ function Page (props) {
         {
           props.news && props.news.map(item => (
             <li key={item.id}>
-              <div>文章标题: {item.title}</div>
+              <div>文章标题2: {item.title}</div>
               <div className='toDetail'><Link to={`/news/${item.id}`}>点击查看详情</Link></div>
             </li>
           ))
