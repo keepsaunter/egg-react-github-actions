@@ -72,7 +72,7 @@ jobs:
       - id: getDateTime
         name: get-date-str
         run: echo "::set-output name=dateStr::$(TZ=UTC-8 date +'%Y%m%d%H%M%S')"
-      - run: zip -r app-code.zip .
+      # - run: zip -r app-code.zip .
       - id: docker_build
         name: build-image
         uses: docker/build-push-action@v2
