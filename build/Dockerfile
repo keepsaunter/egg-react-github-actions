@@ -1,4 +1,3 @@
 FROM node
-COPY app-code /app-code
-WORKDIR /app-code
+COPY app-code.zip /app-code
 ENTRYPOINT ls
