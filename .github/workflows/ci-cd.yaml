@@ -59,6 +59,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: npm install --omit=dev
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-dist
+          path: dist
       - uses: docker/login-action@v1
         with: 
           username: ${{secrets.DOCKER_HUB_USERNAME}}
@@ -66,6 +70,7 @@ jobs:
       - id: getDateTime
         name: get-date-str
         run: echo "::set-output name=dateStr::$(TZ=UTC-8 date +'%Y%m%d%H%M%S')"
+      - run: zip -r app-code.zip .
       - id: docker_build
         name: build-image
         uses: docker/build-push-action@v2

@@ -1,3 +1,4 @@
 FROM node
-WORKDIR /App
-ENTRYPOINT npm run prod-start
+COPY app-code /app-code
+WORKDIR /app-code
+ENTRYPOINT ls
