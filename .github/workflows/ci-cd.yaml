@@ -9,15 +9,6 @@ jobs:
         run: |
           commitSha="${{github.sha}}"
           echo "::set-output name=shortSha::${commitSha:0:6}"
-  # checkout:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: actions/cache@v3
-  #       with:
-  #         path: .
-  #         key: ${{ runner.os }}-${{ github.ref_name }}-code
-
   # install-prod:
   #   runs-on: ubuntu-latest
   #   steps:
@@ -33,7 +24,6 @@ jobs:
     needs: getShortSha
     steps:
       - uses: actions/checkout@v3
-      - run: node -v
       # - uses: actions/setup-node@v3
       #   with:
       #     node-version: 16
@@ -47,7 +37,9 @@ jobs:
         run: npm install
   build:
     runs-on: ubuntu-latest
-    needs: install
+    needs:
+      - install
+      - getShortSha
     steps:
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
@@ -61,3 +53,25 @@ jobs:
           name: build-dist
           path: dist
           if-no-files-found: error
+  image:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v3
+      - run: npm install --omit=dev
+      - uses: docker/login-action@v1
+        with: 
+          username: ${{secrets.DOCKER_HUB_USERNAME}}
+          password: ${{secrets.DOCKER_HUB_PASSWD}}
+      - id: getDateTime
+        name: get-date-str
+        run: echo "::set-output name=dateStr::$(TZ=UTC-8 date +'%Y%m%d%H%M%S')"
+      - id: docker_build
+        name: build-image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./build/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{github.event.repository.name}}:${{steps.getDateTime.outputs.dateStr}}
+      - run: echo ${{ steps.docker_build.outputs.digest }}
